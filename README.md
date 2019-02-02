@@ -31,3 +31,11 @@ $ npm stop
 
 
 [egg]: https://eggjs.org
+
+### todo
+* [ ] user
+* [ ] log
+* [ ] blog
+* [ ] tag
+
+* [ ] GraphQL
