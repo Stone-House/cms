@@ -13,12 +13,13 @@ class UserController extends Controller {
   async create() {
     const ctx = this.ctx;
     const { password, confirmPassword, name } = ctx.request.body;
-    
+
     let data;
     if (password === confirmPassword) {
       data = {
         name,
         password,
+        is_delete: 0,
       };
       const res = await ctx.service.user.create(data);
       if (res.affectedRows === 1) {
@@ -32,14 +33,13 @@ class UserController extends Controller {
     } else {
       ctx.body = {
         message: '两次密码不一致！',
-      }
+      };
       ctx.status = 400;
     }
   }
 
   async update() {
     const ctx = this.ctx;
-    console.log(ctx.params);
     let data = {};
     Object.assign(data, ctx.request.body, ctx.params);
     const res = await ctx.service.user.update(data);
@@ -50,6 +50,40 @@ class UserController extends Controller {
       };
     } else {
       ctx.status = 401;
+    }
+  }
+
+  async destroy() {
+    const ctx = this.ctx;
+    const { id } = ctx.params;
+
+    let oneRes = await ctx.service.user.findOne(id);
+    if (!oneRes) {
+      ctx.status = 417;
+      ctx.body = {
+        message: '用户不存在，请确认id后再试！',
+      };
+    } else {
+      if (oneRes.is_delete === 0) {
+        const res = await ctx.service.user.destroy(id);
+        if (res.affectedRows === 1) {
+          ctx.status = 200;
+          ctx.body = {
+            message: '操作成功！',
+          };
+        } else {
+          ctx.body = {
+            message: '未知错误！',
+            res,
+          };
+          ctx.status = 417;
+        }
+      } else {
+        ctx.status = 417;
+        ctx.body = {
+          message: '该用户已经停用！',
+        };
+      }
     }
   }
 }
