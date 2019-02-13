@@ -4,9 +4,18 @@ const Service = require('egg').Service;
 
 class UserService extends Service {
   async findOne(id) {
-    console.log(id);
     const res = await this.app.mysql.get('user', { id });
-    console.log(res);
+    return res;
+  }
+
+  async findOneByNameAndPassword({name, password}) {
+    const res = await this.app.mysql.select('user', {
+      where: {
+        is_delete: 0,
+        name,
+        password
+      }
+    })
     return res;
   }
 

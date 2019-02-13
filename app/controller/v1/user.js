@@ -86,6 +86,29 @@ class UserController extends Controller {
       }
     }
   }
+
+  async login() {
+    const ctx = this.ctx;
+    const { name, password } = ctx.request.body;
+    let data = {
+      name,
+      password,
+    }
+    const user = await ctx.service.user.findOneByNameAndPassword(data);
+    console.log(ctx.session)
+    if (user && user.length > 0) {
+      ctx.session.username = name
+      ctx.status = 200;
+      ctx.body = {
+        message: '登录成功！'
+      }
+    } else {
+      ctx.status = 401;
+      ctx.body = {
+        message: '用户名或者密码不正确，请重试！'
+      }
+    }
+  }
 }
 
 module.exports = UserController;
