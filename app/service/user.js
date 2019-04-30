@@ -8,7 +8,7 @@ class UserService extends Service {
     return res;
   }
 
-  async findOneByNameAndPassword({name, password}) {
+  async findOneByNameAndPassword({ name, password }) {
     const res = await this.app.mysql.select('user', {
       where: {
         is_delete: 0,
@@ -20,9 +20,9 @@ class UserService extends Service {
   }
 
   async findList() {
-    const user = await this.app.mysql.select('user', {
-      where: { is_delete: 0 },
-    });
+    const connection = this.app.mysql;
+    let sql = `SELECT id, name, is_delete FROM user where name = ?`;
+    const user = connection.query(sql, ['postman'])
     return user;
   }
 
@@ -43,10 +43,10 @@ class UserService extends Service {
     return res;
   }
 
-  async destroy(userId) {
+  async changeStatus(userId, flag) {
     const res = await this.app.mysql.update('user', {
       id: userId,
-      is_delete: 1,
+      is_delete: flag,
     });
     return res;
   }

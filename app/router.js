@@ -8,5 +8,7 @@ module.exports = app => {
   router.get('/', controller.home.index);
 
   router.resources('users', '/api/v1/users', controller.v1.user)
-  router.post('/user/login', controller.v1.user.login)
+  router.post('/api/v1/users/login', controller.v1.user.login)
+  router.post('/api/v1/users/logout', controller.v1.user.logout)
+  router.post('/api/v1/users/changeUserStatus', controller.v1.user.changeUserStatus)
 };
