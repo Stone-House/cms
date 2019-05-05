@@ -19,7 +19,6 @@ class UserController extends Controller {
     page = parseInt(page)
     pageSize = parseInt(pageSize)
 
-    // const userList = await ctx.service.user.findList();
     const userList = await ctx.service.user.findUserByPage({ page, pageSize })
     ctx.body = userList
     ctx.status = 200
@@ -38,8 +37,8 @@ class UserController extends Controller {
       }
 
       const ifExit = await ctx.service.user.findOneByName(name)
-      console.log(ifExit)
-      if (ifExit && ifExit.length>0) {
+      console.log('ifExit', ifExit)
+      if (ifExit) {
         ctx.status = 417
         ctx.body = {
           message: '用户已经存在，不能重复创建！',
@@ -48,10 +47,10 @@ class UserController extends Controller {
       }
 
       const res = await ctx.service.user.create(data)
-      if (res.affectedRows === 1) {
+      if (res) {
         ctx.status = 200
         ctx.body = {
-          userId: res.insertId,
+          userId: res.id,
         }
       } else {
         ctx.status = 401
@@ -66,8 +65,9 @@ class UserController extends Controller {
 
   async update() {
     const ctx = this.ctx
-    let data = {}
-    Object.assign(data, ctx.request.body, ctx.params)
+    let data = Object.assign(ctx.request.body, ctx.params)
+    const id = data.id
+    delete data.id
     const { password, confirmPassword, name } = ctx.request.body
 
     if (data.password !== data.confirmPassword) {
@@ -78,14 +78,16 @@ class UserController extends Controller {
     } else {
       delete data.confirmPassword
       delete data.create_at
-      data.update_at = new Date();
     }
 
-    const res = await ctx.service.user.update(data)
-    if (res.affectedRows === 1) {
+    const res = await ctx.service.user.update({
+      id,
+      updates: data,
+    })
+    if (res) {
       ctx.status = 200
       ctx.body = {
-        userId: res.insertId,
+        userId: res.id,
       }
     } else {
       ctx.status = 401
@@ -134,13 +136,12 @@ class UserController extends Controller {
       password,
     }
     const user = await ctx.service.user.findOneByNameAndPassword(data)
-    console.log(ctx.session)
-    if (user && user.length > 0) {
+    if (user) {
       ctx.session.name = name
       ctx.status = 200
       ctx.body = {
         message: '登录成功！',
-        data: user[0],
+        data: user,
       }
     } else {
       ctx.status = 401
@@ -153,7 +154,6 @@ class UserController extends Controller {
   async getUserInfo() {
     const { ctx } = this
     if (ctx.session && ctx.session.name) {
-      console.log(ctx.session)
       const user = await ctx.service.user.findOneByName(ctx.session.name)
       if (!user) {
         ctx.status = 417
@@ -162,10 +162,9 @@ class UserController extends Controller {
         }
         return
       }
-      console.log(user)
       ctx.status = 200
       ctx.body = {
-        data: user[0],
+        data: user,
       }
     } else {
       ctx.status = 402

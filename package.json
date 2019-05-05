@@ -5,9 +5,10 @@
   "private": true,
   "dependencies": {
     "egg": "^2.2.1",
-    "egg-mysql": "^3.0.0",
     "egg-scripts": "^2.5.0",
-    "egg-validate": "^2.0.2"
+    "egg-sequelize": "^4.3.1",
+    "egg-validate": "^2.0.2",
+    "mysql2": "^1.6.5"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -17,7 +18,8 @@
     "egg-mock": "^3.14.0",
     "eslint": "^4.11.0",
     "eslint-config-egg": "^6.0.0",
-    "webstorm-disable-index": "^1.2.0"
+    "webstorm-disable-index": "^1.2.0",
+    "sequelize-cli": "^5.4.0"
   },
   "engines": {
     "node": ">=8.9.0"

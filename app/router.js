@@ -12,4 +12,6 @@ module.exports = app => {
   router.post('/api/v1/users/getUserInfo', controller.v1.user.getUserInfo)
   router.post('/api/v1/users/logout', controller.v1.user.logout)
   router.post('/api/v1/users/changeUserStatus', controller.v1.user.changeUserStatus)
+
+  router.resources('subjectBank', '/api/v1/subjectBank', controller.v1.subjectBank)
 };
